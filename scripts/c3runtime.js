@@ -1281,11 +1281,6 @@ const C3=self.C3,NAMESPACE=C3.Behaviors.Tween;NAMESPACE.ValueGetters=class{const
 const C3=self.C3,C3X=self.C3X,IBehaviorInstance=self.IBehaviorInstance,Ease=self.Ease,NAMESPACE=C3.Behaviors.Tween,map=new WeakMap,TWEEN_PROPERTIES=new Map([["x",{name:"offsetX",type:"one"}],["y",{name:"offsetY",type:"one"}],["width",{name:"offsetWidth",type:"one"}],["height",{name:"offsetHeight",type:"one"}],["angle",{name:"offsetAngle",type:"one"}],["opacity",{name:"offsetOpacity",type:"one"}],["color",{name:"offsetColor",type:"color"}],["z-elevation",{name:"offsetZElevation",type:"one"}],["x-scale",{name:"offsetScaleX",type:"one"}],["y-scale",{name:"offsetScaleY",type:"one"}],["position",{name:"position",type:"two"}],["size",{name:"size",type:"two"}],["scale",{name:"scale",type:"two"}],["value",{name:"value",type:"value"}]]);function getIndexForEase(e){C3X.RequireString(e);const t=Ease.ToInternal(e);let n;if(-1===(n=t?Ease.GetIndexForEase(t,null):Ease.GetIndexForEase(e,null)))throw new Error(`invalid ease name '${e}'`);return n}const TWEEN_OPTS={tags:"",destroyOnComplete:!1,loop:!1,pingPong:!1,repeatCount:1,startValue:0},I_TWEEN_OPTS={easeToIndexFunc:getIndexForEase};function ValidateTags(e,t=!1){if(!(t&&null==e||"string"==typeof e||Array.isArray(e)))throw new Error("invalid tags")}self.ITweenBehaviorInstance=class extends IBehaviorInstance{constructor(){super(),map.set(this,IBehaviorInstance._GetInitInst().GetSdkInstance())}startTween(e,t,n,a,o){const s=map.get(this);if(!s.IsEnabled()||!s.IsInstanceValid())return null;const r=TWEEN_PROPERTIES.get(e);if(!r)throw new Error("invalid tween property");"one"===r.type||"value"===r.type?C3X.RequireNumber(t):(C3X.RequireArray(t),"two"===r.type?(C3X.RequireNumber(t[0]),C3X.RequireNumber(t[1])):"color"===r.type&&(C3X.RequireNumber(t[0]),C3X.RequireNumber(t[1]),C3X.RequireNumber(t[2]))),"angle"===e?t=C3.toDegrees(t):"opacity"===e?t*=100:"color"===e&&(t=C3.PackRGBEx(t[0],t[1],t[2]));const l=getIndexForEase(a);C3X.RequireFiniteNumber(n),o=Object.assign({},TWEEN_OPTS,o),"value"===r.type&&C3X.RequireNumber(o.startValue),ValidateTags(o.tags,!0);let i;if("one"===r.type||"color"===r.type?i=s.CreateTween(NAMESPACE.TweenArguments.OneProperty(s,o.tags,r.name,t,n,l,!!o.destroyOnComplete,!!o.loop,!!o.pingPong,o.repeatCount)):"two"===r.type?i=s.CreateTween(NAMESPACE.TweenArguments.TwoProperties(s,o.tags,r.name,t[0],t[1],n,l,!!o.destroyOnComplete,!!o.loop,!!o.pingPong,o.repeatCount)):"value"===r.type&&(i=s.CreateTween(NAMESPACE.TweenArguments.ValueProperty(s,o.tags,o.startValue,t,n,l,!!o.destroyOnComplete,!!o.loop,!!o.pingPong,o.repeatCount))),i.Play())return i.GetITweenState(s,I_TWEEN_OPTS);throw new Error("failed to start tween")}*allTweens(){const e=map.get(this);for(const t of e.AllTweens())yield t.GetITweenState(e,I_TWEEN_OPTS)}*tweensByTags(e){ValidateTags(e);const t=map.get(this);for(const n of t.GetTweens(e))yield n.GetITweenState(t,I_TWEEN_OPTS)}get isEnabled(){return map.get(this).IsEnabled()}set isEnabled(e){map.get(this).SetEnabled(e)}};
 }
 
-// scripts/behaviors/Timer/c3runtime/runtime.js
-{
-{const a=self.C3;a.Behaviors.Timer=class extends a.SDKBehaviorBase{constructor(e){super(e)}Release(){super.Release()}}}{const d=self.C3;d.Behaviors.Timer.Type=class extends d.SDKBehaviorTypeBase{constructor(e){super(e)}Release(){super.Release()}OnCreate(){}}}{const g=self.C3,h=self.C3X,i=self.IBehaviorInstance,j=(g.Behaviors.Timer.SingleTimer=class{constructor(e,t,i,s){this._current=g.New(g.KahanSum),this._current.Set(e||0),this._total=g.New(g.KahanSum),this._total.Set(t||0),this._duration=i||0,this._isRegular=!!s,this._isPaused=!1}GetCurrentTime(){return this._current.Get()}GetTotalTime(){return this._total.Get()}GetDuration(){return this._duration}SetPaused(e){this._isPaused=!!e}IsPaused(){return this._isPaused}Add(e){this._current.Add(e),this._total.Add(e)}HasFinished(){return this._current.Get()>=this._duration}Update(){if(this.HasFinished()){if(!this._isRegular)return!0;this._current.Subtract(this._duration)}return!1}SaveToJson(){return{"c":this._current.Get(),"t":this._total.Get(),"d":this._duration,"r":this._isRegular,"p":this._isPaused}}LoadFromJson(e){this._current.Set(e["c"]),this._total.Set(e["t"]),this._duration=e["d"],this._isRegular=!!e["r"],this._isPaused=!!e["p"]}},g.Behaviors.Timer.Instance=class extends g.SDKBehaviorInstanceBase{constructor(e,t){super(e),this._timers=new Map}Release(){this._timers.clear(),super.Release()}_StartTimer(e,t,i){const s=new g.Behaviors.Timer.SingleTimer(0,0,e,i);this._timers.set(t.toLowerCase(),s),this._UpdateTickState()}_StopTimer(e){this._timers.delete(e.toLowerCase()),this._UpdateTickState()}_StopAllTimers(){this._timers.clear(),this._UpdateTickState()}_IsTimerRunning(e){return this._timers.has(e.toLowerCase())}_GetTimerCurrentTime(e){const t=this._timers.get(e.toLowerCase());return t?t.GetCurrentTime():0}_GetTimerTotalTime(e){const t=this._timers.get(e.toLowerCase());return t?t.GetTotalTime():0}_GetTimerDuration(e){const t=this._timers.get(e.toLowerCase());return t?t.GetDuration():0}_HasTimerFinished(e){const t=this._timers.get(e.toLowerCase());return!!t&&t.HasFinished()}_SetTimerPaused(e,t){const i=this._timers.get(e.toLowerCase());i&&i.SetPaused(t)}_IsTimerPaused(e){const t=this._timers.get(e.toLowerCase());return!!t&&t.IsPaused()}_SetAllTimersPaused(e){for(const t of this._timers.values())t.SetPaused(e)}_UpdateTickState(){0<this._timers.size?(this._StartTicking(),this._StartTicking2()):(this._StopTicking(),this._StopTicking2())}SaveToJson(){const e={};for(const[t,i]of this._timers.entries())e[t]=i.SaveToJson();return e}LoadFromJson(e){this._timers.clear();for(const[t,i]of Object.entries(e)){const s=new g.Behaviors.Timer.SingleTimer;s.LoadFromJson(i),this._timers.set(t,s)}this._UpdateTickState()}Tick(){const e=this._runtime.GetDt(this._inst);for(const[t,i]of this._timers)i.IsPaused()||(i.Add(e),i.HasFinished()&&this.DispatchScriptEvent("timer",!1,{tag:t}))}Tick2(){for(const[e,t]of this._timers.entries()){const i=t.Update();i&&this._timers.delete(e)}}GetDebuggerProperties(){return[{title:"behaviors.timer.debugger.timers",properties:[...this._timers.entries()].map(e=>({name:"$"+e[0],value:Math.round(10*e[1].GetCurrentTime())/10+" / "+Math.round(10*e[1].GetDuration())/10}))}]}GetScriptInterfaceClass(){return self.ITimerBehaviorInstance}},new WeakMap),k=["once","regular"];self.ITimerBehaviorInstance=class extends i{constructor(){super(),j.set(this,i._GetInitInst().GetSdkInstance())}startTimer(e,t,i="once"){h.RequireFiniteNumber(e),h.RequireString(t);const s=k.indexOf(i);if(-1===s)throw new Error("invalid type");j.get(this)._StartTimer(e,t,1===s)}setTimerPaused(e,t){h.RequireString(e),j.get(this)._SetTimerPaused(e,!!t)}setAllTimersPaused(e){j.get(this)._SetAllTimersPaused(!!e)}stopTimer(e){h.RequireString(e),j.get(this)._StopTimer(e)}stopAllTimers(){j.get(this)._StopAllTimers()}isTimerRunning(e){return h.RequireString(e),j.get(this)._IsTimerRunning(e)}isTimerPaused(e){return h.RequireString(e),j.get(this)._IsTimerPaused(e)}getCurrentTime(e){return h.RequireString(e),j.get(this)._GetTimerCurrentTime(e)}getTotalTime(e){return h.RequireString(e),j.get(this)._GetTimerTotalTime(e)}getDuration(e){return h.RequireString(e),j.get(this)._GetTimerDuration(e)}hasFinished(e){return h.RequireString(e),j.get(this)._HasTimerFinished(e)}}}{const sa=self.C3;sa.Behaviors.Timer.Cnds={OnTimer(e){return this._HasTimerFinished(e)},IsTimerRunning(e){return this._IsTimerRunning(e)},IsTimerPaused(e){return this._IsTimerPaused(e)}}}{const wa=self.C3;wa.Behaviors.Timer.Acts={StartTimer(e,t,i){this._StartTimer(e,i,1===t)},StopTimer(e){this._StopTimer(e)},StopAllTimers(){this._StopAllTimers()},PauseResumeTimer(e,t){this._SetTimerPaused(e,0===t)},PauseResumeAllTimers(e){this._SetAllTimersPaused(0===e)}}}{const Ea=self.C3;Ea.Behaviors.Timer.Exps={CurrentTime(e){return this._GetTimerCurrentTime(e)},TotalTime(e){return this._GetTimerTotalTime(e)},Duration(e){return this._GetTimerDuration(e)}}}
-}
-
 // scripts/behaviors/Flash/c3runtime/runtime.js
 {
 {const a=self.C3;a.Behaviors.Flash=class extends a.SDKBehaviorBase{constructor(e){super(e)}Release(){super.Release()}}}{const d=self.C3;d.Behaviors.Flash.Type=class extends d.SDKBehaviorTypeBase{constructor(e){super(e)}Release(){super.Release()}OnCreate(){}}}{const g=self.C3,h=self.C3X,i=self.IBehaviorInstance,j=(g.Behaviors.Flash.Instance=class extends g.SDKBehaviorInstanceBase{constructor(e,t){super(e),this._onTime=0,this._offTime=0,this._stage=0,this._stageTimeLeft=0,this._timeLeft=0,this._StartTicking()}Release(){super.Release()}_Flash(e,t,s){this._onTime=e,this._offTime=t,this._stage=1,this._stageTimeLeft=t,this._timeLeft=s,this._inst.GetWorldInfo().SetVisible(!1),this._runtime.UpdateRender()}_StopFlashing(){this._timeLeft=0,this._inst.GetWorldInfo().SetVisible(!0),this._runtime.UpdateRender()}_IsFlashing(){return 0<this._timeLeft}SaveToJson(){return{"on":this._onTime,"off":this._offTime,"s":this._stage,"stl":this._stageTimeLeft,"tl":this._timeLeft}}LoadFromJson(e){this._onTime=e["on"],this._offTime=e["off"],this._stage=e["s"],this._stageTimeLeft=e["stl"],this._timeLeft=null===e["tl"]?1/0:e["tl"]}Tick(){if(!(this._timeLeft<=0)){const e=this._runtime.GetDt(this._inst);if(this._timeLeft-=e,this._timeLeft<=0)return this._timeLeft=0,this._inst.GetWorldInfo().SetVisible(!0),this._runtime.UpdateRender(),this.DispatchScriptEvent("flashend"),this.DebugTrigger(g.Behaviors.Flash.Cnds.OnFlashEnded);this._stageTimeLeft-=e,this._stageTimeLeft<=0&&(0===this._stage?(this._inst.GetWorldInfo().SetVisible(!1),this._stage=1,this._stageTimeLeft+=this._offTime):(this._inst.GetWorldInfo().SetVisible(!0),this._stage=0,this._stageTimeLeft+=this._onTime),this._runtime.UpdateRender())}}GetDebuggerProperties(){const e="behaviors.flash.debugger";return[{title:"$"+this.GetBehaviorType().GetName(),properties:[{name:e+".on-time",value:this._onTime,onedit:e=>this._onTime=e},{name:e+".off-time",value:this._offTime,onedit:e=>this._offTime=e},{name:e+".is-flashing",value:0<this._timeLeft},{name:e+".time-left",value:this._timeLeft}]}]}GetScriptInterfaceClass(){return self.IFlashBehaviorInstance}},new WeakMap);self.IFlashBehaviorInstance=class extends i{constructor(){super(),j.set(this,i._GetInitInst().GetSdkInstance())}flash(e,t,s){h.RequireFiniteNumber(e),h.RequireFiniteNumber(t),h.RequireFiniteNumber(s),j.get(this)._Flash(e,t,s)}stop(){j.get(this)._StopFlashing()}get isFlashing(){return j.get(this)._IsFlashing()}}}{const z=self.C3;z.Behaviors.Flash.Cnds={IsFlashing(){return this._IsFlashing()},OnFlashEnded(){return!0}}}{const A=self.C3;A.Behaviors.Flash.Acts={Flash(e,t,s){this._Flash(e,t,s)},StopFlashing(){this._StopFlashing()}}}{const E=self.C3;E.Behaviors.Flash.Exps={}}
@@ -1390,11 +1385,13 @@ function or(l, r)
 
 self.C3_ExpressionFuncs = [
 		() => 100,
+		() => "fon",
+		() => -10,
+		() => 0,
 		() => 99,
 		() => "Başlangıç",
-		() => 0,
 		() => 1,
-		() => "Buttons",
+		() => "dogruanimasyon",
 		() => "y",
 		() => 2,
 		() => "x",
@@ -1448,8 +1445,12 @@ self.C3_ExpressionFuncs = [
 			const n3 = p._GetNode(3);
 			return () => ((and(((n0.ExpObject()) === (n1.ExpInstVar()) ? 1 : 0), ((n2.ExpObject()) === (n3.ExpInstVar()) ? 1 : 0))) ? ("Yerinde") : ("Degil"));
 		},
-		() => 0.5,
 		() => "Yerinde",
+		() => 8,
+		() => "dogru",
+		() => 50,
+		() => 0.2,
+		() => 3,
 		p => {
 			const n0 = p._GetNode(0);
 			return () => (n0.ExpInstVar()).toString();
@@ -1464,7 +1465,6 @@ self.C3_ExpressionFuncs = [
 		},
 		() => "ses4",
 		() => "Bitiş",
-		() => 8,
 		() => "Animation 1",
 		() => "Animation 2",
 		() => 960,
@@ -1472,7 +1472,6 @@ self.C3_ExpressionFuncs = [
 		() => 1920,
 		() => 1080,
 		() => 1.5,
-		() => 50,
 		p => {
 			const f0 = p._GetNode(0).GetBoundMethod();
 			return () => (f0() * 0.1);
@@ -1493,7 +1492,6 @@ self.C3_ExpressionFuncs = [
 			const n1 = p._GetNode(1);
 			return () => f0(n1.ExpObject());
 		},
-		() => 0.2,
 		() => "ses5",
 		() => "ses1",
 		() => "ses2"
